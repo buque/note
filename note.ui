@@ -6,23 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>233</width>
-    <height>352</height>
+    <width>268</width>
+    <height>420</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QListView" name="listView">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
+  <widget class="QListWidget" name="table">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>231</width>
-     <height>351</height>
+     <width>271</width>
+     <height>421</height>
     </rect>
    </property>
   </widget>
