@@ -9,11 +9,11 @@ import json
 class Work(object):
     dic = {}
 
-    def GetToday(self):
+    def GetToday():
         t = datetime.now().strftime("%Y/%m/%d")
         return t
 
-    def GetYesterday(self):
+    def GetYesterday():
         yesterday = datetime.now() + timedelta(days = -1)
         t = yesterday.strftime("%Y/%m/%d")
         return t
@@ -27,7 +27,8 @@ class Work(object):
         sheet = workbook.sheet_by_index(0)
         nrows = sheet.nrows
         data = {}
-        for i in range(nrows):
+        i = 1
+        while i < nrows:
             date_value = xlrd.xldate_as_tuple(sheet.cell_value(i,0), workbook.datemode)
             date_tmp = date(*date_value[:3]).strftime('%Y/%m/%d')
             content = sheet.row_values(i)#列表
@@ -37,6 +38,7 @@ class Work(object):
                 mylist = []
                 data[date_tmp] = mylist
             mylist.append(content)
+            i =i + 1
         self.dic = data
 
     def ShowDataByJson(self):
