@@ -11,6 +11,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from mywork import Work
+from trayicon import TrayIcon
 
 class NoteWindow(QMainWindow):
     def __init__(self):
@@ -19,6 +20,8 @@ class NoteWindow(QMainWindow):
         self.setFixedWidth(350)
         self.setupNote()
         self.setupToolBar()
+        ti = TrayIcon(self)
+        ti.show()
         self.show()
 
     def newLine(self):
@@ -30,15 +33,15 @@ class NoteWindow(QMainWindow):
         self.table.removeRow(rowCnt)
 
     def setupToolBar(self):
-        exitAction = QAction(QIcon('quit.png'), '退出', self)
+        exitAction = QAction(QIcon('D:\\WorkSpace\\note\\quit.png'), '退出', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.triggered.connect(qApp.quit)
 
-        newAction = QAction(QIcon('new.png'), '新建', self)
+        newAction = QAction(QIcon('D:\\WorkSpace\\note\\new.png'), '新建', self)
         newAction.setShortcut('Ctrl+N')
         newAction.triggered.connect(self.newLine)
 
-        delAction = QAction(QIcon('del.png'), '删除', self)
+        delAction = QAction(QIcon('D:\\WorkSpace\\note\\del.png'), '删除', self)
         delAction.setShortcut('Ctrl+N')
         delAction.triggered.connect(self.delLine)
 
@@ -126,11 +129,10 @@ class NoteWindow(QMainWindow):
             self.table.setCellWidget(i, 3, stateComb)
 
 
-
     def setTableInitData(self):
         '''Show Today && Yesterday's works.'''
         work = Work()
-        work.GetDataFromExcel(r'E:\WorkSpace\note\工作记录表.xls')
+        work.GetDataFromExcel(r'D:\WorkSpace\note\工作记录表.xls')
         mydate = work.GetToday()#显示今日数据
         mylist = work.GetDataByDate(mydate)
         self.fillTable(mydate, mylist)

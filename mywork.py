@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
-
-import os
+"""
+模型层
+"""
 from datetime import datetime, date, timedelta
-import xlrd, xlwt
 import json
+import xlrd
+import xlwt
 
 
 class Work(object):
+    """数据层"""
     dic = {}
 
     def GetToday(self):
