@@ -13,12 +13,17 @@ class WorkView(QTableWidget):
         self.setView()
 
     def newLine(self):
-        rowCnt = self.table.rowCount()
-        self.table.insertRow(rowCnt)
+        rowCnt = self.rowCount()
+        self.insertRow(rowCnt)
+        levelComb = self.createLevelCombox()
+        self.setCellWidget(rowCnt, 1, levelComb)
+        stateComb = self.createStateCombox()
+        self.setCellWidget(rowCnt, 3, stateComb)
+
     
     def delLine(self):
-        rowCnt = self.table.currentRow()
-        self.table.removeRow(rowCnt)
+        rowCnt = self.currentRow()
+        self.removeRow(rowCnt)
 
     def setView(self):
         '''Show Today && Yesterday's works.'''
