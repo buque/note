@@ -32,7 +32,7 @@ class TrayIcon(QSystemTrayIcon):
         #把鼠标点击图标的信号和槽连接
         self.messageClicked.connect(self.mClied)
         #把鼠标点击弹出消息的信号和槽连接
-        self.setIcon(QIcon("D:\\WorkSpace\\trayIcon\\add.ico"))
+        self.setIcon(QIcon("D:\\WorkSpace\\note\\add.ico"))
         self.icon = self.MessageIcon()
         #设置图标
 

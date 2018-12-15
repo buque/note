@@ -1,62 +1,98 @@
 # -*- coding: utf-8 -*-
 """
-模型层
+模型层数据存储格式
+{'2018/12/15', [['1', '完成代码测试', '1'],['1', '完成功能开发', '1']]}
 """
+
 from datetime import datetime, date, timedelta
 import json
-import xlrd
-import xlwt
-
+import copy
+from store import WorkStore
 
 class Work(object):
-    """数据层"""
-    dic = {}
+    '''模型层'''
 
-    def GetToday(self):
-        t = datetime.now().strftime("%m/%d")
-        return t
+    def __init__(self):
+        self.store = WorkStore(r'D:\WorkSpace\note\工作记录表.xls')
+        self.dic = None
 
-    def GetYesterday(self):
+    def getToday(self):
+        mydate = datetime.now().strftime("%m/%d")
+        return mydate
+
+    def getYesterday(self):
         yesterday = datetime.now() + timedelta(days = -1)
-        t = yesterday.strftime("%m/%d")
-        return t
+        mydate = yesterday.strftime("%m/%d")
+        return mydate
 
-    def GetDataByDate(self, mydate):
-        return self.dic[mydate]
+    def showData(self):
+        jsonStr = json.dumps(self.dic, ensure_ascii=False)
+        print(jsonStr)
 
-    def GetDataFromExcel(self, fileName):
-        '''Read excel to memory.'''
-        workbook = xlrd.open_workbook(fileName)
-        sheet = workbook.sheet_by_index(0)
-        nrows = sheet.nrows
+    def getDataByDate(self, mydate):
+        data = self.getData()
+
+        mylist = data.get(mydate, None)
+        return mylist
+    
+    def getData(self):
+        '''init Work data by WorkStore data.'''
+        if self.dic is not None:
+            return self.dic
+        
+        listdata = self.store.getData()
         data = {}
-        for i in range(1, nrows):
-            date_value = xlrd.xldate_as_tuple(sheet.cell_value(i,0), workbook.datemode)
-            date_tmp = date(*date_value[:3]).strftime('%m/%d')
-            content = sheet.row_values(i)#列表
-            del content[0]
-            mylist = data.get(date_tmp, None)
+        for content in listdata:
+            mydate = content[0]
+            mylist = data.get(mydate, None)
             if mylist == None:
                 mylist = []
-                data[date_tmp] = mylist
-            mylist.append(content)
+                data[mydate] = mylist
+            line = copy.deepcopy(content[1:])
+            if line[0] == "一般":
+                line[0] = 0
+            elif line[0] == "重要":
+                line[0] = 1
+            elif line == "紧急":
+                line[0] = 2
+            else:
+                line[0] = 3
+
+            if line[2] == "未开始":
+                line[2] = 0
+            elif line[2] == "进行中":
+                line[2] = 1
+            else: 
+                line[2] = 2
+
+            mylist.append(line)
         self.dic = data
+        return data
 
-    def ShowDataByJson(self):
-        returnJson = json.dumps(self.dic, ensure_ascii=False)
-        print(returnJson)
-
-    def PutData2Excel(self, fileName):
-        '''Write excel to excel.'''
-        workbook = xlwt.Workbook(encoding='utf-8')
-        sheet = workbook.add_sheet('sheet1', cell_overwrite_ok=True)
-        i = 0
+    def putData(self):
+        '''init WorkStore data by Work data.'''  
+        data = []
         for key in self.dic.keys():
             mylist = self.dic[key]
             for content in mylist:
-                sheet.write(i, 0, key)
-                sheet.write(i, 1, content[0])
-                sheet.write(i, 2, content[1])
-                sheet.write(i, 3, content[2])
-                i = i + 1
-        workbook.save(fileName)
+                line = list(key)
+                line.append(copy.deepcopy(content))
+                if line[0] == 0:
+                    line[0] = '一般'
+                elif line[0] == 1:
+                    line[0] = '重要'
+                elif data[0][0] == 2:
+                    line[0] = '紧急'
+                else:
+                    line[0] = '关键'
+
+                if line[3] == 0:
+                    line[3] = '未开始'
+                elif line[3] == 1:
+                    line[3] = '进行中'
+                else: 
+                    line[3] = '已完成'
+                data.append(line)
+        self.store.putData(data)
+        
+
