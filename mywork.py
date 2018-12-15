@@ -31,7 +31,6 @@ class Work(object):
 
     def getDataByDate(self, mydate):
         data = self.getData()
-
         mylist = data.get(mydate, None)
         return mylist
     
@@ -75,16 +74,15 @@ class Work(object):
         for key in self.dic.keys():
             mylist = self.dic[key]
             for content in mylist:
-                line = list(key)
-                line.append(copy.deepcopy(content))
-                if line[0] == 0:
-                    line[0] = '一般'
-                elif line[0] == 1:
-                    line[0] = '重要'
-                elif data[0][0] == 2:
-                    line[0] = '紧急'
+                line = copy.deepcopy(content)
+                if line[1] == 0:
+                    line[1] = '一般'
+                elif line[1] == 1:
+                    line[1] = '重要'
+                elif line[1] == 2:
+                    line[1] = '紧急'
                 else:
-                    line[0] = '关键'
+                    line[1] = '关键'
 
                 if line[3] == 0:
                     line[3] = '未开始'
@@ -94,5 +92,9 @@ class Work(object):
                     line[3] = '已完成'
                 data.append(line)
         self.store.putData(data)
-        
+    
+    def updateData(self, mylist):
+        mydate = self.getToday()
+        self.dic[mydate] = mylist
+        self.putData()
 

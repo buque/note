@@ -19,6 +19,8 @@ class NoteWindow(QMainWindow):
         self.setFixedWidth(350)
         self.setupNote()
         self.setupToolBar()
+        self.setupStatusBar()
+        self.view.setupSignal(self.updateStatusBar)
         ti = TrayIcon(self)
         ti.show()
         self.show()
@@ -36,17 +38,29 @@ class NoteWindow(QMainWindow):
         delAction.setShortcut('Ctrl+N')
         delAction.triggered.connect(self.view.delLine)
 
+        saveAction = QAction(QIcon('D:\\WorkSpace\\note\\save.png'), '保存', self)
+        saveAction.setShortcut('Ctrl+S')
+        saveAction.triggered.connect(self.view.save)
+
         self.toolbar = self.addToolBar('菜单栏')
         self.toolbar.addAction(exitAction)
         self.toolbar.addAction(newAction)
         self.toolbar.addAction(delAction)
+        self.toolbar.addAction(saveAction)
+
+    def setupStatusBar(self):
+        self.status = self.statusBar()
+        self.status.showMessage('实时更新的信息', 0)
+        
+    def updateStatusBar(self, content):
+        self.status.showMessage(content, 0)
 
     def setupNote(self):
         self.view = WorkView()
-        hbox = QHBoxLayout()
-        hbox.addStretch(1)
-        hbox.addWidget(self.view)
-        self.setLayout(hbox)
+        # hbox = QHBoxLayout()
+        # hbox.addStretch(1)
+        # hbox.addWidget(self.view)
+        # self.setLayout(hbox)
         self.setCentralWidget(self.view)
 
     

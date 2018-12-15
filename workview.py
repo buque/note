@@ -1,8 +1,11 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import pyqtSignal
 from mywork import Work
 
 
 class WorkView(QTableWidget):
+    mySignal = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
         # self.setWindowTitle("biaoge")
@@ -12,6 +15,18 @@ class WorkView(QTableWidget):
         self.setColumnCount(len(columName))
         self.setHorizontalHeaderLabels(columName)
         self.setupView()
+        self.cellChanged.connect(self.updateStatus)
+        
+    def setupSignal(self, func):
+        '''信号用于通知主窗口文本发生了变化'''
+        self.mySignal.connect(func)
+
+    def updateStatus(self, info):
+        #reply = QMessageBox.information(self, "消息框标题", "这是一条消息。", QMessageBox.Yes | QMessageBox.No)
+        #发一个信号给主窗口
+        if info is None or isinstance(info, int):
+            info = r"修改未保存"
+        self.mySignal.emit(info)
 
     def newLine(self):
         rowCnt = self.rowCount()
@@ -23,13 +38,38 @@ class WorkView(QTableWidget):
 
         levelComb = self.createLevelCombox()
         self.setCellWidget(rowCnt, 1, levelComb)
+        self.setItem(rowCnt, 2, QTableWidgetItem('123'))
         stateComb = self.createStateCombox()
         self.setCellWidget(rowCnt, 3, stateComb)
+        self.updateStatus(r'新增未保存')
 
-    
     def delLine(self):
         rowCnt = self.currentRow()
         self.removeRow(rowCnt)
+        self.updateStatus(r'删除未保存')
+
+    def save(self):
+        '''将列表显示信息格式化为对象与原有数据做合并'''
+        viewlist = self.getViewData()
+        self.work.updateData(viewlist)
+        self.updateStatus(r'已保存')
+
+    def getViewData(self):
+        '''将列表信息格式化为Work数据，再做替换'''
+        mylist = []
+        rowCnt = self.rowCount()
+        mydate = self.work.getToday()
+        for i in range(0, rowCnt):
+            #首列不用获取，更新时间即可
+            line = []
+            line.append(mydate)
+            levelComb = self.cellWidget(i, 1)
+            line.append(levelComb.currentIndex())
+            line.append(self.item(i,2).text())
+            stateComb = self.cellWidget(i, 3)
+            line.append(stateComb.currentIndex())
+            mylist.append(line)
+        return mylist
 
     def setupView(self):
         '''Show Today && Yesterday's works.'''
@@ -55,7 +95,6 @@ class WorkView(QTableWidget):
             levelComb.setCurrentIndex(data[0][0])
             self.setCellWidget(i, 1, levelComb)
 
-            
             self.setItem(i, 2, QTableWidgetItem(data[0][1]))  #事物
             #self.table.setItem(i, 3, QTableWidgetItem(data[0][2]))  #状态
             stateComb = self.createStateCombox()

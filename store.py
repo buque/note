@@ -29,9 +29,17 @@ class WorkStore():
         '''Write data to excel.'''
         workbook = xlwt.Workbook(encoding='utf-8')
         sheet = workbook.add_sheet('sheet1', cell_overwrite_ok=True)
-        i = 0
+        line = ['日期','级别','事物','状态']
+        sheet.write(0, 0, line[0])
+        sheet.write(0, 1, line[1])
+        sheet.write(0, 2, line[2])
+        sheet.write(0, 3, line[3])
+        i = 1
+        datastyle = xlwt.XFStyle()
+        datastyle.num_format_str = '%Y/%m/%d'
         for content in data:
-            for j in range(0, 3):
+            sheet.write(i, 0, '2018/'+content[0], datastyle)
+            for j in range(1, 4):
                 sheet.write(i, j, content[j])
             i = i + 1
         workbook.save(self.fileName)
